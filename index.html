@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>最強の門番アプリ</title>
     <style>
-        /* 見た目を整えるデザイン（CSS） */
-        body { font-family: 'Helvetica Neue', Arial, sans-serif; text-align: center; background-color: #1a1a1a; color: white; padding: 50px 20px; }
-        .card { background: #2a2a2a; padding: 30px; border-radius: 20px; shadow: 0 10px 20px rgba(0,0,0,0.5); }
-        h1 { font-size: 24px; margin-bottom: 20px; }
+        body { font-family: sans-serif; text-align: center; background-color: #1a1a1a; color: white; padding: 50px 20px; }
+        .card { background: #2a2a2a; padding: 30px; border-radius: 20px; }
         .status { font-size: 1.2rem; font-weight: bold; margin: 20px 0; padding: 10px; border-radius: 10px; }
-        .locked { background-color: #ff4d4d; color: white; }
-        .unlocked { background-color: #2ecc71; color: white; }
-        button { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: none; cursor: pointer; transition: 0.3s; }
+        .locked { background-color: #ff4d4d; }
+        .unlocked { background-color: #2ecc71; }
+        button { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: none; cursor: pointer; }
         .btn-main { background-color: #007bff; color: white; margin-top: 20px; }
         .btn-reset { background-color: #444; color: #aaa; margin-top: 50px; font-size: 14px; }
     </style>
@@ -21,47 +19,45 @@
 
     <div class="card">
         <h1>修行の門番</h1>
-        
-        <!-- 状態を表示する場所 -->
-        <div id="status-display" class="status locked">🔒 封印中：修行を終えろ</div>
-
-        <p>野球の練習と中国語、<br>本当に終わったんだな？</p>
-
-        <!-- 修行完了ボタン -->
-        <button class="btn-main" onclick="finishTraining()">修行完了（封印を解く）</button>
-
-        <!-- テスト用のリセットボタン（明日になれば自動でこうなる予定） -->
+        <div id="status-display" class="status locked">判定中...</div>
+        <p id="msg">修行が終わるまでSNSは使わせん。</p>
+        <button id="main-btn" class="btn-main" onclick="finishTraining()">修行完了（封印を解く）</button>
         <button class="btn-reset" onclick="resetApp()">デバッグ用：強制ロック</button>
     </div>
 
     <script>
-        // --- ここから動きのプログラム（JavaScript） ---
+        // SNSのURL（ここを自分のよく使うSNSに変えてもいい）
+        const SNS_URL = "https://twitter.com"; 
 
-        // ページを開いた時に「今の状態」を確認する
         window.onload = function() {
             const status = localStorage.getItem('isDone');
             const display = document.getElementById('status-display');
+            const msg = document.getElementById('msg');
 
             if (status === 'true') {
-                display.innerText = "🔓 解放中：SNSへ行ってよし";
+                display.innerText = "🔓 解放中：SNSへ転送するぞ";
                 display.className = "status unlocked";
+                msg.innerText = "3秒後にSNSへ戻る。そのまま待て。";
+                
+                // --- 【ここが重要！】解放中なら自動でSNSへ飛ばす ---
+                setTimeout(() => {
+                    window.location.href = SNS_URL;
+                }, 2000); // 2秒後に実行
             } else {
                 display.innerText = "🔒 封印中：修行を終えろ";
                 display.className = "status locked";
             }
         };
 
-        // 「修行完了」ボタンを押した時
         function finishTraining() {
-            localStorage.setItem('isDone', 'true'); // スマホに「達成」を覚えさせる
-            alert("記録したぞ！SNSへ戻れ！");
-            location.reload(); // 画面を更新
+            localStorage.setItem('isDone', 'true');
+            alert("記録した！SNSへ送り返してやる。");
+            location.reload(); 
         }
 
-        // リセットボタン（テスト用）
         function resetApp() {
-            localStorage.removeItem('isDone'); // 記憶を消す
-            alert("封印し直したぞ。");
+            localStorage.removeItem('isDone');
+            alert("封印し直した。");
             location.reload();
         }
     </script>
