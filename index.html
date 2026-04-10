@@ -26,13 +26,12 @@
     </div>
 
     <script>
-        // --- 修正ポイント：戻り先の設定 ---
+        // --- ここを正しく直したぞ！ ---
         const REDIRECT_MAP = {
-            'twitter': '[https://ryotaroomata-cell.github.io/Dainikeikoku/?from=twitter](https://ryotaroomata-cell.github.io/Dainikeikoku/?from=twitter)',
-            'x.com': 'https://x.com',
-            '[https://ryotaroomata-cell.github.io/Dainikeikoku/?from=instagram](https://ryotaroomata-cell.github.io/Dainikeikoku/?from=instagram)',
-            'youtube': 'https://youtube.com',
-            'tiktok': 'https://tiktok.com'
+            'twitter': 'https://x.com',
+            'instagram': 'https://www.instagram.com',
+            'youtube': 'https://www.youtube.com',
+            'tiktok': 'https://www.tiktok.com'
         };
 
         window.onload = function() {
@@ -40,7 +39,6 @@
             const display = document.getElementById('status-display');
             const msg = document.getElementById('msg');
 
-            // iPhoneのオートメーションでURLの最後に「?from=twitter」とか付けると判定できる
             const urlParams = new URLSearchParams(window.location.search);
             const fromApp = urlParams.get('from');
 
@@ -48,14 +46,13 @@
                 display.innerText = "🔓 解放中";
                 display.className = "status unlocked";
                 
-                // 戻り先がある場合だけ自動転送
                 if (fromApp && REDIRECT_MAP[fromApp]) {
                     msg.innerText = fromApp + " へ戻るぞ。3秒待て。";
                     setTimeout(() => {
                         window.location.href = REDIRECT_MAP[fromApp];
                     }, 2000);
                 } else {
-                    msg.innerText = "解放済みだ。好きなアプリを開け。";
+                    msg.innerText = "解放済みだ。このままSNSを開け。";
                 }
             } else {
                 display.innerText = "🔒 封印中：修行を終えろ";
