@@ -26,23 +26,37 @@
     </div>
 
     <script>
-        // SNSのURL（ここを自分のよく使うSNSに変えてもいい）
-        const SNS_URL = "https://twitter.com"; 
+        // --- 修正ポイント：戻り先の設定 ---
+        const REDIRECT_MAP = {
+            'twitter': 'https://twitter.com',
+            'x.com': 'https://x.com',
+            'instagram': 'https://instagram.com',
+            'youtube': 'https://youtube.com',
+            'tiktok': 'https://tiktok.com'
+        };
 
         window.onload = function() {
             const status = localStorage.getItem('isDone');
             const display = document.getElementById('status-display');
             const msg = document.getElementById('msg');
 
+            // iPhoneのオートメーションでURLの最後に「?from=twitter」とか付けると判定できる
+            const urlParams = new URLSearchParams(window.location.search);
+            const fromApp = urlParams.get('from');
+
             if (status === 'true') {
-                display.innerText = "🔓 解放中：SNSへ転送するぞ";
+                display.innerText = "🔓 解放中";
                 display.className = "status unlocked";
-                msg.innerText = "3秒後にSNSへ戻る。そのまま待て。";
                 
-                // --- 【ここが重要！】解放中なら自動でSNSへ飛ばす ---
-                setTimeout(() => {
-                    window.location.href = SNS_URL;
-                }, 2000); // 2秒後に実行
+                // 戻り先がある場合だけ自動転送
+                if (fromApp && REDIRECT_MAP[fromApp]) {
+                    msg.innerText = fromApp + " へ戻るぞ。3秒待て。";
+                    setTimeout(() => {
+                        window.location.href = REDIRECT_MAP[fromApp];
+                    }, 2000);
+                } else {
+                    msg.innerText = "解放済みだ。好きなアプリを開け。";
+                }
             } else {
                 display.innerText = "🔒 封印中：修行を終えろ";
                 display.className = "status locked";
@@ -51,13 +65,13 @@
 
         function finishTraining() {
             localStorage.setItem('isDone', 'true');
-            alert("記録した！SNSへ送り返してやる。");
+            alert("記録した！修行完了だ。");
             location.reload(); 
         }
 
         function resetApp() {
             localStorage.removeItem('isDone');
-            alert("封印し直した。");
+            alert("封印し直したぞ。");
             location.reload();
         }
     </script>
