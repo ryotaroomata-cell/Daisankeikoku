@@ -3,75 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>最強の門番アプリ</title>
+    <title>修行の門番</title>
     <style>
         body { font-family: sans-serif; text-align: center; background-color: #1a1a1a; color: white; padding: 50px 20px; }
         .card { background: #2a2a2a; padding: 30px; border-radius: 20px; }
-        .status { font-size: 1.2rem; font-weight: bold; margin: 20px 0; padding: 10px; border-radius: 10px; }
-        .locked { background-color: #ff4d4d; }
-        .unlocked { background-color: #2ecc71; }
-        button { width: 100%; padding: 15px; font-size: 18px; font-weight: bold; border-radius: 10px; border: none; cursor: pointer; }
-        .btn-main { background-color: #007bff; color: white; margin-top: 20px; }
-        .btn-reset { background-color: #444; color: #aaa; margin-top: 50px; font-size: 14px; }
+        .unlocked-btn { display: block; width: 100%; padding: 20px; background: #2ecc71; color: white; text-decoration: none; border-radius: 10px; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
-
     <div class="card">
         <h1>修行の門番</h1>
-        <div id="status-display" class="status locked">判定中...</div>
-        <p id="msg">修行が終わるまでSNSは使わせん。</p>
-        <button id="main-btn" class="btn-main" onclick="finishTraining()">修行完了（封印を解く）</button>
-        <button class="btn-reset" onclick="resetApp()">デバッグ用：強制ロック</button>
-    </div>
+        <div id="status">判定中...</div>
 
-    <script>
-        // 【重要】ここの名前（twitter, instagram）と、iPhone側の ?from=◯◯ を一致させる
-        const REDIRECT_MAP = {
-            'twitter': 'https://x.com',
-            'instagram': 'https://www.instagram.com',
-            'youtube': 'https://www.youtube.com'
-        };
+        <script>
+            const REDIRECT_MAP = {
+                'twitter': 'https://x.com',
+                'instagram': 'https://www.instagram.com'
+            };
 
-        window.onload = function() {
-            const status = localStorage.getItem('isDone');
-            const display = document.getElementById('status-display');
-            const msg = document.getElementById('msg');
+            window.onload = function() {
+                const isDone = localStorage.getItem('isDone');
+                const params = new URLSearchParams(window.location.search);
+                const fromApp = params.get('from');
+                const div = document.getElementById('status');
 
-            // URLの「?from=◯◯」を読み取る
-            const params = new URLSearchParams(window.location.search);
-            const fromApp = params.get('from');
-
-            if (status === 'true') {
-                display.innerText = "🔓 解放中";
-                display.className = "status unlocked";
-                
-                if (fromApp && REDIRECT_MAP[fromApp]) {
-                    msg.innerText = fromApp + " へ戻るぞ。3秒待て。";
-                    // 確実に飛ばすための命令
-                    setTimeout(() => {
-                        window.location.href = REDIRECT_MAP[fromApp];
-                    }, 1500);
+                if (isDone === 'true') {
+                    const targetUrl = REDIRECT_MAP[fromApp] || 'https://google.com';
+                    div.innerHTML = `
+                        <p style="color:#2ecc71">🔓 修行完了！</p>
+                        <a href="${targetUrl}" class="unlocked-btn">ここを押してSNSへ戻る</a>
+                        <p style="font-size:12px; color:#aaa; margin-top:10px;">※自動で飛ばない場合は上を押せ</p>
+                    `;
+                    // 自動で飛ぶ挑戦も一応する
+                    setTimeout(() => { window.location.href = targetUrl; }, 1000);
                 } else {
-                    msg.innerText = "解放済みだ。そのままアプリを開き直せ。";
+                    div.innerHTML = `
+                        <p style="color:#ff4d4d">🔒 封印中</p>
+                        <button onclick="localStorage.setItem('isDone','true');location.reload();" style="width:100%;padding:15px;">修行が終わったらここを押せ</button>
+                    `;
                 }
-            } else {
-                display.innerText = "🔒 封印中：修行を終えろ";
-                display.className = "status locked";
-            }
-        };
-
-        function finishTraining() {
-            localStorage.setItem('isDone', 'true');
-            alert("修行完了！門を開けるぞ。");
-            location.reload(); 
-        }
-
-        function resetApp() {
-            localStorage.removeItem('isDone');
-            alert("封印し直した。");
-            location.reload();
-        }
-    </script>
+            };
+        </script>
+    </div>
 </body>
 </html>
