@@ -26,12 +26,11 @@
     </div>
 
     <script>
-        // --- ここを正しく直したぞ！ ---
+        // 【重要】ここの名前（twitter, instagram）と、iPhone側の ?from=◯◯ を一致させる
         const REDIRECT_MAP = {
             'twitter': 'https://x.com',
             'instagram': 'https://www.instagram.com',
-            'youtube': 'https://www.youtube.com',
-            'tiktok': 'https://www.tiktok.com'
+            'youtube': 'https://www.youtube.com'
         };
 
         window.onload = function() {
@@ -39,8 +38,9 @@
             const display = document.getElementById('status-display');
             const msg = document.getElementById('msg');
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const fromApp = urlParams.get('from');
+            // URLの「?from=◯◯」を読み取る
+            const params = new URLSearchParams(window.location.search);
+            const fromApp = params.get('from');
 
             if (status === 'true') {
                 display.innerText = "🔓 解放中";
@@ -48,11 +48,12 @@
                 
                 if (fromApp && REDIRECT_MAP[fromApp]) {
                     msg.innerText = fromApp + " へ戻るぞ。3秒待て。";
+                    // 確実に飛ばすための命令
                     setTimeout(() => {
                         window.location.href = REDIRECT_MAP[fromApp];
-                    }, 2000);
+                    }, 1500);
                 } else {
-                    msg.innerText = "解放済みだ。このままSNSを開け。";
+                    msg.innerText = "解放済みだ。そのままアプリを開き直せ。";
                 }
             } else {
                 display.innerText = "🔒 封印中：修行を終えろ";
@@ -62,13 +63,13 @@
 
         function finishTraining() {
             localStorage.setItem('isDone', 'true');
-            alert("記録した！修行完了だ。");
+            alert("修行完了！門を開けるぞ。");
             location.reload(); 
         }
 
         function resetApp() {
             localStorage.removeItem('isDone');
-            alert("封印し直したぞ。");
+            alert("封印し直した。");
             location.reload();
         }
     </script>
